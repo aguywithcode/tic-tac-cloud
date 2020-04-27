@@ -17,6 +17,5 @@ namespace TicTacCloud.Tests
         {
             Assert.Equal(".........", game.State);
         }
-
     }
 }
