@@ -35,7 +35,6 @@ namespace TicTacCloud
         {
             try
             {
-
                 cosmosClient = new CosmosClient(EndpointUrl, PrimaryKey);
                 await CreateDatabaseAsync();
                 await CreateContainerAsync();
@@ -73,8 +72,6 @@ namespace TicTacCloud
 
          public async Task AddItemsToContainerAsync()
          {
-             // Create a family object for the Andersen family
-
              var game = new Game();
              try
              {
