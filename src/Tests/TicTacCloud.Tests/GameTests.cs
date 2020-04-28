@@ -1,4 +1,3 @@
-using TicTacCloud;
 using Xunit;
 
 namespace TicTacCloud.Tests
