@@ -31,7 +31,15 @@ namespace TicTacCloud
         // The container we will create.
         private Container container;
 
-        public async Task GetStartedDemoAsync()
+        public async Task<Game> StartGame()
+        {
+            cosmosClient = new CosmosClient(EndpointUrl, PrimaryKey);
+            await CreateDatabaseAsync();
+            await CreateContainerAsync();
+            return await AddItemsToContainerAsync();
+        }
+
+        private async Task GetStartedDemoAsync()
         {
             try
             {
@@ -52,7 +60,7 @@ namespace TicTacCloud
             }
         }
 
-        public async Task CreateDatabaseAsync()
+        private async Task CreateDatabaseAsync()
         {
             // Create a new database
             database = await cosmosClient.CreateDatabaseIfNotExistsAsync(databaseId);
@@ -62,7 +70,7 @@ namespace TicTacCloud
         /// Create the container if it does not exist. 
         /// Specifiy "/LastName" as the partition key since we're storing family information, to 
         /// ensure good distribution of requests and storage.
-         public async Task CreateContainerAsync()
+         private async Task CreateContainerAsync()
          {
              // Create a new container
              container = 
@@ -70,7 +78,7 @@ namespace TicTacCloud
              Console.WriteLine("Created Container: {0}\n", container.Id);
          }
 
-         public async Task AddItemsToContainerAsync()
+         private async Task<Game> AddItemsToContainerAsync()
          {
              var game = new Game();
              try
@@ -86,14 +94,17 @@ namespace TicTacCloud
                          $"Created item in database with id: {gameResponse.Resource.GameId}");
                  Console.WriteLine(
                          $"Operation consumed {gameResponse.RequestCharge} RUs.");
+                 return gameResponse.Resource;
              }
              catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.Conflict)
              {
                  Console.WriteLine("Item in database with id: {0} already exists\n", game.GameId);
+                 //TODO: Retry with new Id
+                 throw new Exception("DuplicateId", ex);
              }
          }
 
-         public async Task QueryItemsAsync()
+         private async Task QueryItemsAsync()
          {
              var sqlQueryText = "SELECT * FROM c ";
 
@@ -115,7 +126,7 @@ namespace TicTacCloud
              }
          }
 
-         public async Task DeleteDatabaseAndCleanupAsync()
+         private async Task DeleteDatabaseAndCleanupAsync()
          {
              DatabaseResponse databaseResourceResponse = await database.DeleteAsync();
 

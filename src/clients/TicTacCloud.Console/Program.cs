@@ -13,7 +13,9 @@ namespace TicTacCloud.Cli
                 Console.WriteLine("Beginning operations...\n");
 
                 var service = new GameService();
-                await service.GetStartedDemoAsync();
+                var game = await service.StartGame();
+                Console.WriteLine($"GameId: {game.GameId}");
+                Console.WriteLine($"State: {game.State}");
                 Console.WriteLine("End of demo, press any key to exit.");
                 Console.ReadKey();
         }
